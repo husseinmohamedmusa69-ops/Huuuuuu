@@ -16,17 +16,26 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20  # حدثنا الإصدار عشان نخلص من التحذير الأصفر اللي في الصورة
 
     - name: Install Dependencies
-      run: npm install
-
-    - name: Build Android Project
       run: |
-        npx cap init "Daraa Al Muslim" "com.hussein.daralmuslim" --web-dir=.
+        npm init -y
+        npm install @capacitor/core @capacitor/cli @capacitor/android
+
+    - name: Prepare Web Directory
+      run: |
+        mkdir -p www
+        cp -r * www/ 2>/dev/null || true
+        rm -rf www/www www/node_modules
+
+    - name: Initialize and Build Project
+      run: |
+        npx cap init "Daraa Al Muslim" "com.hussein.daralmuslim" --web-dir=www
         npx cap add android
         npx cap sync android
         cd android
+        chmod +x gradlew
         ./gradlew assembleDebug
 
     - name: Upload APK
